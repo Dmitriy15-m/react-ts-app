@@ -7,7 +7,7 @@ import TodoList from './TodoList';
 const App: React.FC = () => {
 
   const [value, setValue] = useState('');
-  const [todos, setTodos] = useState<ITodo[]>([]);
+  const [todos, setTodos] = useState<ITodo[]>([]);  // где не примитивные значения передаем дженерики
 
   const addTodo = () => {
     if (value) {
@@ -19,6 +19,23 @@ const App: React.FC = () => {
       setValue('');
     }
   }
+
+  const removeTodo = (id: number): void => {
+    let filter = todos.filter(todo => todo.id !== id ? true : false)
+    setTodos(filter);
+  };
+  const toogleTodo = (id: number): void => {
+
+    let result = todos.map(todo => todo.id !== id ? todo : { ...todo, complete: !todo.complete });
+    // if (todo.id !== id) {
+    //   return todo;
+    // } else {
+    //   return { ...todo, complete: true }
+    // }
+
+
+    setTodos(result);
+  };
 
   const handlerChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     // чтобы TS понимал что такае e-событие
@@ -42,8 +59,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
-    console.log(inputRef);
-
   }, [])
 
 
@@ -52,7 +67,7 @@ const App: React.FC = () => {
       <div>
         <input value={value} onChange={handlerChange} ref={inputRef} onKeyDown={onKeyDownHandler} />
         <button onClick={addTodo}>Add</button>
-        <TodoList items={todos} />
+        <TodoList items={todos} removeTodo={removeTodo} toogleTodo={toogleTodo} />
       </div>
     </div>
   )
